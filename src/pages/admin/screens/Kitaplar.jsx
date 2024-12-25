@@ -37,6 +37,33 @@ const BooksComponent = () => {
   });
   const [editingChapter, setEditingChapter] = useState(null);
   const placeholder = "Bölüm içeriğini buraya yazınız...";
+  const [editingBook, setEditingBook] = useState(null);
+
+  const handleEditBook = async () => {
+    if (!editingBook) return;
+
+    try {
+      const bookDoc = doc(db, "kitaplar", kitapId);
+      await updateDoc(bookDoc, {
+        title: editingBook.title,
+        author: editingBook.author,
+        description: editingBook.description,
+        kategori: editingBook.kategori,
+        sure: editingBook.sure,
+      });
+
+      setBooks(
+        books.map((book) =>
+          book.docId === kitapId ? { ...book, ...editingBook } : book
+        )
+      );
+      setEditingBook(null);
+      alert("Kitap bilgileri güncellendi!");
+    } catch (error) {
+      console.error("Kitap güncellenirken hata oluştu:", error);
+      alert("Güncelleme sırasında bir hata oluştu!");
+    }
+  };
 
   const config = useMemo(
     () => ({
@@ -367,19 +394,107 @@ const BooksComponent = () => {
                   alt={currentBook.title}
                   className="w-32 h-40 object-cover rounded"
                 />
-                <div>
-                  <h3 className="text-xl font-semibold">{currentBook.title}</h3>
-                  <p className="text-gray-600">{currentBook.author}</p>
-                  <p className="text-gray-500 mt-2">
-                    {currentBook.description}
-                  </p>
-                  <p className="text-gray-500">
-                    Kategori: {currentBook.kategori}
-                  </p>
-                  <p className="text-gray-500">
-                    Okuma Süresi: {currentBook.sure}
-                  </p>
-                </div>
+                {editingBook ? (
+                  <div className="flex-1 space-y-2">
+                    <input
+                      type="text"
+                      value={editingBook.title}
+                      onChange={(e) =>
+                        setEditingBook({
+                          ...editingBook,
+                          title: e.target.value,
+                        })
+                      }
+                      className="p-2 border border-gray-300 rounded w-full"
+                      placeholder="Kitap Başlığı"
+                    />
+                    <input
+                      type="text"
+                      value={editingBook.author}
+                      onChange={(e) =>
+                        setEditingBook({
+                          ...editingBook,
+                          author: e.target.value,
+                        })
+                      }
+                      className="p-2 border border-gray-300 rounded w-full"
+                      placeholder="Yazar"
+                    />
+                    <textarea
+                      value={editingBook.description}
+                      onChange={(e) =>
+                        setEditingBook({
+                          ...editingBook,
+                          description: e.target.value,
+                        })
+                      }
+                      className="p-2 border border-gray-300 rounded w-full"
+                      placeholder="Açıklama"
+                      rows="3"
+                    />
+                    <input
+                      type="text"
+                      value={editingBook.kategori}
+                      onChange={(e) =>
+                        setEditingBook({
+                          ...editingBook,
+                          kategori: e.target.value,
+                        })
+                      }
+                      className="p-2 border border-gray-300 rounded w-full"
+                      placeholder="Kategori"
+                    />
+                    <input
+                      type="text"
+                      value={editingBook.sure}
+                      onChange={(e) =>
+                        setEditingBook({ ...editingBook, sure: e.target.value })
+                      }
+                      className="p-2 border border-gray-300 rounded w-full"
+                      placeholder="Okuma Süresi"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleEditBook}
+                        className="bg-green-500 px-4 py-1 rounded text-white"
+                      >
+                        Kaydet
+                      </button>
+                      <button
+                        onClick={() => setEditingBook(null)}
+                        className="bg-gray-500 px-4 py-1 rounded text-white"
+                      >
+                        İptal
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold">
+                          {currentBook.title}
+                        </h3>
+                        <p className="text-gray-600">{currentBook.author}</p>
+                        <p className="text-gray-500 mt-2">
+                          {currentBook.description}
+                        </p>
+                        <p className="text-gray-500">
+                          Kategori: {currentBook.kategori}
+                        </p>
+                        <p className="text-gray-500">
+                          Okuma Süresi: {currentBook.sure}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setEditingBook({ ...currentBook })}
+                        className="bg-blue-500 h-8 px-4 rounded text-white"
+                      >
+                        Düzenle
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

@@ -33,7 +33,7 @@ const About = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className="relative bg-gradient-to-b from-gray-50 to-white py-20">
+        <div className="relative bg-white dark:bg-black/90 py-20">
           <motion.div
             className="absolute left-5 top-40 hidden md:block text-gray-300"
             animate={{
@@ -66,7 +66,7 @@ const About = () => {
 
           <div className="mx-auto max-w-6xl px-4">
             <motion.div
-              className="relative rounded-2xl bg-white p-8 shadow-2xl md:grid md:grid-cols-2 md:gap-12"
+              className="relative rounded-2xl bg-black/90 dark:bg-white p-8 shadow-2xl md:grid md:grid-cols-2 md:gap-12"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -97,13 +97,13 @@ const About = () => {
                     className="mr-3 hidden md:block text-blue-500"
                     size={32}
                   />
-                  <h2 className="text-4xl font-bold text-gray-800">
+                  <h2 className="text-4xl font-bold text-white dark:text-gray-800">
                     {hakkinda.baslik ? hakkinda.baslik : "Başlık bulunamadı."}
                   </h2>
                 </motion.div>
 
                 <motion.p
-                  className="mb-6 text-lg leading-relaxed text-gray-600"
+                  className="mb-6 text-lg leading-relaxed text-white/80 dark:text-gray-600"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}

@@ -31,7 +31,7 @@ const RecentBooks = () => {
   }, []);
 
   return (
-    <div className="p-8 relative">
+    <div className="p-8 relative bg-white dark:bg-black/90">
       <motion.div
         className="absolute left-5 top-5 md:top-10 text-gray-300"
         animate={{
@@ -66,7 +66,7 @@ const RecentBooks = () => {
         <motion.h2
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-3xl font-bold text-center mb-8 text-gray-800"
+          className="text-3xl font-bold text-center mb-8 dark:text-white text-gray-800"
         >
           Son Kitaplar
         </motion.h2>
@@ -80,11 +80,11 @@ const RecentBooks = () => {
               transition={{ delay: index * 0.2 }}
               className="bg-white p-6 rounded-lg border border-black shadow-lg hover:shadow-xl transition-shadow"
             >
-              <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+              <div className="flex flex-col items-center justify-center gap-6">
                 <img
                   src={book.imageUrl}
                   alt={book.title}
-                  className="w-32 h-48 object-cover rounded-md shadow"
+                  className="w-full h-72 object-contain"
                 />
                 <div className="flex items-center justify-center flex-col">
                   <div className="flex items-center gap-2 mb-3">

@@ -4,7 +4,7 @@ import { Loader2, BookOpen, Pen } from "lucide-react";
 
 const SignatureLoader = () => {
   return (
-    <div className="fixed inset-0 over flex z-50 items-center justify-center bg-gradient-to-br from-pink-900 to-gray-800">
+    <div className="fixed inset-0 over flex z-50 items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
       <div className="flex flex-col items-center gap-8 relative w-full">
         <motion.div
           className="absolute hidden md:block left-16 opacity-20"
@@ -34,7 +34,7 @@ const SignatureLoader = () => {
               ease: "easeOut",
             }}
           >
-            Buşra Balçık
+            Buşra Balçık Hoşgeldiniz
           </motion.div>
 
           <motion.div

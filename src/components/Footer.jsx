@@ -1,19 +1,26 @@
 import React from "react";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Instagram } from "lucide-react";
 import { motion } from "framer-motion";
+import tiktok from "../images/tiktok.png";
 
 const Footer = () => {
   const socialLinks = [
-    { icon: <Facebook size={20} />, url: "#", delay: 0 },
-    { icon: <Twitter size={20} />, url: "#", delay: 0.1 },
-    { icon: <Instagram size={20} />, url: "#", delay: 0.2 },
-    { icon: <Linkedin size={20} />, url: "#", delay: 0.3 },
+    {
+      icon: <Instagram size={20} />,
+      url: "https://www.instagram.com/deppworth/",
+      delay: 0.2,
+    },
+    {
+      icon: <img src={tiktok} width="20" />,
+      url: "https://www.tiktok.com/@deppworth",
+      delay: 0.4,
+    },
   ];
 
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-black/90 text-gray-300">
+    <footer className="dark:bg-black dark:text-white bg-black/5 text-gray-600">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex flex-col items-center gap-4">
           <motion.div
@@ -25,7 +32,7 @@ const Footer = () => {
               <motion.a
                 key={index}
                 href={social.url}
-                className="hover:text-white transform hover:-translate-y-1 transition-all duration-300"
+                className="text-black p-1 rounded-full bg-white transform hover:-translate-y-1 transition-all duration-300"
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
                 initial={{ opacity: 0, y: 20 }}
@@ -50,15 +57,8 @@ const Footer = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            © {currentYear} Buşra Balçık. All Rights Reserved.
+            © {currentYear} Anıl Cenan. All Rights Reserved.
           </motion.p>
-          <p className="text-xs">
-            Designed by{" "}
-            <span className="font-medium underline ">
-              Anıl Cenan &{" "}
-              <a href="https://wa.me/905411961830">Kürkaya Yazılım</a>
-            </span>
-          </p>
         </div>
       </div>
     </footer>

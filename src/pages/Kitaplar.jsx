@@ -45,12 +45,12 @@ const RecentBooks = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="relative py-12 px-4 sm:px-6 lg:px-8">
+      <div className="relative dark:bg-black/95 py-12 px-4 sm:px-6 lg:px-8">
         <div className="relative max-w-7xl mx-auto">
           <motion.h2
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="text-5xl font-bold text-center text-black mb-5"
+            className="text-5xl font-bold text-center text-black dark:text-white mb-5"
           >
             Kitaplar
           </motion.h2>
@@ -74,7 +74,7 @@ const RecentBooks = () => {
                   className="bg-black/90  rounded-xl overflow-hidden hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
                 >
                   <div className="relative group">
-                    <div className="overflow-hidden border">
+                    <div className="overflow-hidden">
                       <img
                         src={book.imageUrl}
                         alt={book.title}

@@ -5,10 +5,11 @@ import Kitaplarim from "./pages/Kitaplar";
 import Iletisim from "./pages/Iletisim";
 import KitapDetay from "./pages/KitapDetay";
 import Panel from "./pages/admin/Panel";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Anasayfa />} />
@@ -19,7 +20,7 @@ function App() {
           <Route path="*" element={<Anasayfa />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </ThemeProvider>
   );
 }
 

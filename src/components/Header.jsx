@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Menu, X, Book, Home, Mail } from "lucide-react";
+import { Menu, X, Book, Home, Mail, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../context/ThemeContext";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isDark, setIsDark } = useTheme();
 
   const navigation = [
     { name: "Anasayfa", href: "/", icon: Home },
@@ -13,8 +15,7 @@ const Header = () => {
 
   return (
     <motion.nav
-      className="bg-black/90 shadow-2xl text-white"
-      initial={{ opacity: 0, y: -20 }}
+      className="bg-white dark:bg-black/90 shadow-2xl text-black dark:text-white transition-colors duration-200"
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
@@ -29,14 +30,14 @@ const Header = () => {
             Buşra Balçık
           </motion.div>
 
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             {navigation.map((item, index) => {
               const Icon = item.icon;
               return (
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className="flex items-center space-x-2 hover:text-gray-300 transition-colors duration-200"
+                  className="flex items-center space-x-2 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
@@ -48,17 +49,45 @@ const Header = () => {
                 </motion.a>
               );
             })}
+
+            <motion.button
+              onClick={() => setIsDark(!isDark)}
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors duration-200"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={isDark ? "dark" : "light"}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                </motion.div>
+              </AnimatePresence>
+            </motion.button>
           </div>
 
           <motion.div
-            className="md:hidden"
+            className="md:hidden flex items-center space-x-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
             <motion.button
+              onClick={() => setIsDark(!isDark)}
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </motion.button>
+
+            <motion.button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-md hover:bg-gray-700 focus:outline-none"
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -93,7 +122,7 @@ const Header = () => {
                     <motion.a
                       key={item.name}
                       href={item.href}
-                      className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-700"
+                      className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}

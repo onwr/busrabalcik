@@ -70,7 +70,7 @@ const Slider = () => {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="mb-4 text-3xl text-center font-bold md:text-6xl"
+                className="mb-4 text-3xl container mx-auto text-center font-bold md:text-5xl"
               >
                 {slides[currentSlide].title}
               </motion.h1>
