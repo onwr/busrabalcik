@@ -26,7 +26,7 @@ const SignatureLoader = () => {
 
         <div className="relative py-12">
           <motion.div
-            className="text-5xl font-serif text-white tracking-wider"
+            className="text-5xl font-serif text-white text-center tracking-wider"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{

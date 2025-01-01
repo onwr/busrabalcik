@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Book, NotebookPen, Pen, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { db } from "../../db/Firebase";
-import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, getDocs } from "firebase/firestore";
+
+const truncateText = (text, maxLength) => {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + "...";
+};
 
 const RecentBooks = () => {
   const [books, setBooks] = useState([]);
@@ -78,30 +83,35 @@ const RecentBooks = () => {
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: index * 0.2 }}
-              className="bg-white p-6 rounded-lg border border-black shadow-lg hover:shadow-xl transition-shadow"
+              className="dark:bg-white bg-black/90 p-3 rounded-lg border border-black shadow-lg hover:shadow-xl transition-shadow"
             >
               <div className="flex flex-col items-center justify-center gap-6">
                 <img
                   src={book.imageUrl}
                   alt={book.title}
-                  className="w-full h-72 object-contain"
+                  className="w-auto h-96 object-contain"
                 />
                 <div className="flex items-center justify-center flex-col">
                   <div className="flex items-center gap-2 mb-3">
                     <Book className="w-5 h-5 text-yellow-500" />
-                    <h3 className="text-xl font-bold text-gray-800">
+                    <h3 className="text-xl font-bold text-white dark:text-gray-800">
                       {book.title}
                     </h3>
                   </div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Pen className="w-4 h-4 text-gray-500" />
-                    <p className="text-gray-600 font-medium">{book.author}</p>
+                    <Pen className="w-4 h-4 text-white/70 dark:text-gray-500" />
+                    <p className="text-white/80 dark:text-gray-600 font-medium">
+                      {book.author}
+                    </p>
                   </div>
-                  <p className="text-center text-gray-500">
-                    {book.description}
-                  </p>
+                  <div
+                    className="text-center text-white/90 dark:text-gray-500"
+                    dangerouslySetInnerHTML={{
+                      __html: truncateText(book.description, 100),
+                    }}
+                  />
                   <motion.button
-                    className="mt-4 py-2 px-6 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full text-white font-medium shadow-md flex items-center gap-2 group hover:from-yellow-500 hover:to-yellow-600 transition-all duration-300"
+                    className="mt-4 py-2 px-6 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full text-black dark:text-white font-medium shadow-md flex items-center gap-2 group hover:from-yellow-500 hover:to-yellow-600 transition-all duration-300"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => (window.location.href = `/kitap/${book.id}`)}

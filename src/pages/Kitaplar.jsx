@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowRight, Clock, Star } from "lucide-react";
+import { ArrowRight, Clock, Star, BookOpen, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { db } from "../db/Firebase";
 import { collection, query, orderBy, getDocs } from "firebase/firestore";
@@ -18,13 +18,44 @@ const RecentBooks = () => {
         const kitapRef = collection(db, "kitaplar");
         const kitapQuery = query(kitapRef, orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(kitapQuery);
-        const fetchedBooks = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        console.log(fetchedBooks);
 
-        setBooks(fetchedBooks);
+        // Fetch additional data for each book
+        const booksWithDetails = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const bookData = { id: doc.id, ...doc.data() };
+
+            // Fetch chapters and their comments
+            const chaptersRef = collection(db, `kitaplar/${doc.id}/bolumler`);
+            const chaptersSnapshot = await getDocs(chaptersRef);
+
+            // Calculate total read count
+            const totalReadCount = chaptersSnapshot.docs.reduce(
+              (sum, chapter) => sum + (chapter.data().readCount || 0),
+              0
+            );
+
+            const totalComments = await chaptersSnapshot.docs.reduce(
+              async (promisedSum, chapter) => {
+                const sum = await promisedSum;
+                const commentsRef = collection(
+                  db,
+                  `kitaplar/${doc.id}/bolumler/${chapter.id}/yorumlar`
+                );
+                const commentsSnapshot = await getDocs(commentsRef);
+                return sum + commentsSnapshot.docs.length;
+              },
+              Promise.resolve(0)
+            );
+
+            return {
+              ...bookData,
+              totalReadCount,
+              totalComments,
+            };
+          })
+        );
+
+        setBooks(booksWithDetails);
       } catch (error) {
         console.error("Kitaplar alınırken hata oluştu:", error);
       } finally {
@@ -33,6 +64,11 @@ const RecentBooks = () => {
     };
     fetchBooks();
   }, []);
+
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  };
 
   if (loading) {
     return (
@@ -71,14 +107,14 @@ const RecentBooks = () => {
                   initial={{ y: 0, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-black/90  rounded-xl overflow-hidden hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
+                  className="bg-black/90 dark:bg-white rounded-xl overflow-hidden hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
                 >
                   <div className="relative group">
                     <div className="overflow-hidden">
                       <img
                         src={book.imageUrl}
                         alt={book.title}
-                        className="mx-auto h-[500px] w-auto  transition-transform duration-300 group-hover:scale-105"
+                        className="mx-auto h-[500px] w-auto transition-transform duration-300 group-hover:scale-105"
                         loading="lazy"
                       />
                     </div>
@@ -86,15 +122,35 @@ const RecentBooks = () => {
                   </div>
 
                   <div className="p-6 space-y-4">
-                    <h3 className="text-xl font-bold text-white">
+                    <h3 className="text-xl font-bold text-white dark:text-black">
                       {book.title}
                     </h3>
 
-                    <p className="text-gray-200 font-medium">{book.author}</p>
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-gray-300 dark:text-gray-600" />
+                        <span className="text-sm text-gray-300 dark:text-gray-600">
+                          {book.totalReadCount} okuma
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MessageCircle className="w-4 h-4 text-gray-300 dark:text-gray-600" />
+                        <span className="text-sm text-gray-300 dark:text-gray-600">
+                          {book.totalComments} yorum
+                        </span>
+                      </div>
+                    </div>
 
-                    <p className="text-gray-300 text-sm line-clamp-2">
-                      {book.description}
+                    <p className="text-gray-200 dark:text-gray-700 font-medium">
+                      {book.author}
                     </p>
+
+                    <div
+                      className="text-center text-white/90 dark:text-gray-500"
+                      dangerouslySetInnerHTML={{
+                        __html: truncateText(book.description, 100),
+                      }}
+                    />
 
                     <div className="flex items-center justify-between pt-4">
                       <div className="flex items-center gap-2 text-gray-400">

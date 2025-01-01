@@ -16,6 +16,7 @@ import Loader from "../../../layout/Loader";
 
 const BooksComponent = () => {
   const editor = useRef(null);
+  const descriptionEditor = useRef(null);
   const [books, setBooks] = useState(null);
   const [newBook, setNewBook] = useState({
     title: "",
@@ -34,10 +35,34 @@ const BooksComponent = () => {
     name: "",
     estimatedTime: "",
     icerik: "",
+    giris: false,
   });
   const [editingChapter, setEditingChapter] = useState(null);
-  const placeholder = "Bölüm içeriğini buraya yazınız...";
   const [editingBook, setEditingBook] = useState(null);
+
+  const config = useMemo(
+    () => ({
+      readonly: false,
+      placeholder: "İçerik yazınız...",
+      height: 300,
+    }),
+    []
+  );
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewBook({ ...newBook, [name]: value });
+  };
+
+  const handleDescriptionChange = (content) => {
+    setNewBook({ ...newBook, description: content });
+  };
+
+  const handleEditingDescriptionChange = (content) => {
+    if (editingBook) {
+      setEditingBook({ ...editingBook, description: content });
+    }
+  };
 
   const handleEditBook = async () => {
     if (!editingBook) return;
@@ -65,12 +90,13 @@ const BooksComponent = () => {
     }
   };
 
-  const config = useMemo(
+  const config2 = useMemo(
     () => ({
       readonly: false,
-      placeholder: placeholder || "Start typing...",
+      placeholder: "İçerik yazınız...",
+      height: 300,
     }),
-    [placeholder]
+    []
   );
 
   useEffect(() => {
@@ -115,11 +141,6 @@ const BooksComponent = () => {
     };
     fetchChapters();
   }, [kitapId]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewBook({ ...newBook, [name]: value });
-  };
 
   const handleChapterInputChange = (event) => {
     const { name, value } = event.target;
@@ -201,9 +222,33 @@ const BooksComponent = () => {
         name: "",
         estimatedTime: "",
         icerik: "",
+        giris: false,
       });
     } catch (error) {
       console.error("Bölüm eklenirken hata oluştu:", error);
+    }
+  };
+
+  const handleIntroductionChange = async (chapterId, isIntro) => {
+    try {
+      const promises = chapters.map(async (chapter) => {
+        const chapterDoc = doc(db, `kitaplar/${kitapId}/bolumler`, chapter.id);
+        return updateDoc(chapterDoc, { giris: false });
+      });
+      await Promise.all(promises);
+
+      const chapterDoc = doc(db, `kitaplar/${kitapId}/bolumler`, chapterId);
+      await updateDoc(chapterDoc, { giris: isIntro });
+
+      setChapters(
+        chapters.map((chapter) => ({
+          ...chapter,
+          giris: chapter.id === chapterId ? isIntro : false,
+        }))
+      );
+    } catch (error) {
+      console.error("Giriş bölümü güncellenirken hata oluştu:", error);
+      alert("Güncelleme sırasında bir hata oluştu!");
     }
   };
 
@@ -286,13 +331,17 @@ const BooksComponent = () => {
               onChange={handleInputChange}
               className="mb-2 p-2 border border-gray-300 rounded w-full"
             />
-            <textarea
-              name="description"
-              placeholder="Açıklama"
-              value={newBook.description}
-              onChange={handleInputChange}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            />
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Açıklama
+              </label>
+              <JoditEditor
+                ref={descriptionEditor}
+                value={newBook.description}
+                config={config}
+                onChange={handleDescriptionChange}
+              />
+            </div>
             <input
               type="text"
               name="sure"
@@ -420,18 +469,17 @@ const BooksComponent = () => {
                       className="p-2 border border-gray-300 rounded w-full"
                       placeholder="Yazar"
                     />
-                    <textarea
-                      value={editingBook.description}
-                      onChange={(e) =>
-                        setEditingBook({
-                          ...editingBook,
-                          description: e.target.value,
-                        })
-                      }
-                      className="p-2 border border-gray-300 rounded w-full"
-                      placeholder="Açıklama"
-                      rows="3"
-                    />
+                    <div className="mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Açıklama
+                      </label>
+                      <JoditEditor
+                        ref={descriptionEditor}
+                        value={editingBook.description}
+                        config={config}
+                        onChange={handleEditingDescriptionChange}
+                      />
+                    </div>
                     <input
                       type="text"
                       value={editingBook.kategori}
@@ -476,9 +524,12 @@ const BooksComponent = () => {
                           {currentBook.title}
                         </h3>
                         <p className="text-gray-600">{currentBook.author}</p>
-                        <p className="text-gray-500 mt-2">
-                          {currentBook.description}
-                        </p>
+                        <div
+                          className="text-gray-500 mt-2"
+                          dangerouslySetInnerHTML={{
+                            __html: currentBook.description,
+                          }}
+                        />
                         <p className="text-gray-500">
                           Kategori: {currentBook.kategori}
                         </p>
@@ -521,7 +572,7 @@ const BooksComponent = () => {
               <JoditEditor
                 ref={editor}
                 value={newChapter.icerik}
-                config={config}
+                config={config2}
                 tabIndex={2}
                 onChange={handleJoditChange}
               />
@@ -585,7 +636,26 @@ const BooksComponent = () => {
                   ) : (
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-semibold">{chapter.name}</h4>
+                        <div className="flex items-center gap-4">
+                          <h4 className="font-semibold">{chapter.name}</h4>
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={chapter.giris || false}
+                              onChange={(e) =>
+                                handleIntroductionChange(
+                                  chapter.id,
+                                  e.target.checked
+                                )
+                              }
+                              className="form-checkbox h-4 w-4 text-blue-600"
+                            />
+                            <span className="text-sm text-gray-600">
+                              Giriş Bölümü
+                            </span>
+                          </label>
+                        </div>
+
                         <div className="flex gap-2">
                           <button
                             onClick={() => setEditingChapter(chapter)}

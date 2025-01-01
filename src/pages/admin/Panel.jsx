@@ -14,7 +14,7 @@ const Panel = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("enesiscenanisAdminLoggedenIn");
+    const loggedIn = localStorage.getItem("aniliscenanisAdminLoggedenIn");
     if (loggedIn === "true") {
       setIsLoggedIn(true);
     }
@@ -30,7 +30,7 @@ const Panel = () => {
         const adminData = docSnap.data();
         if (adminData.kullanici === username && adminData.sifre === password) {
           setIsLoggedIn(true);
-          localStorage.setItem("enesiscenanisAdminLoggedenIn", "true");
+          localStorage.setItem("aniliscenanisAdminLoggedenIn", "true");
           setError("");
         } else {
           setError("Kullanıcı adı veya şifre hatalı!");
